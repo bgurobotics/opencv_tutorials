@@ -1,0 +1,41 @@
+#!/usr/bin/env python
+import numpy as np
+import cv2
+from matplotlib import pyplot as plt
+import rospy
+cap = cv2.VideoCapture(0)
+fast = cv2.FastFeatureDetector()
+orb = cv2.ORB()
+lk_params = dict( winSize  = (15,15),
+                   maxLevel = 2,
+                   criteria = (cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 10, 0.03))
+color = np.random.randint(0,255,(100,3))
+while(True):
+    # Capture frame-by-frame
+
+    ret, frame = cap.read()
+
+
+    # Our operations on the frame come here
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    fast.setBool('nonmaxSuppression',0)
+    kp = fast.detect(gray,None)
+    kp_orb = orb.detect(gray,None)
+    kp_orb, des = orb.compute(gray, kp_orb)
+    img3 = cv2.drawKeypoints(gray, kp, color=(255,0,0))
+    img2 = cv2.drawKeypoints(gray,kp_orb,color=(0,255,0), flags=0)
+
+
+    # Display the resulting frame
+    cv2.imshow('frame',img3)
+    cv2.imshow('frame_ob',img2)
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+
+# When everything done, release the capture
+cap.release()
+cv2.destroyAllWindows()
+
+
+
+
